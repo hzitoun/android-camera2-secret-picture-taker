@@ -1,7 +1,7 @@
 # Android Camera2 Secret Picture Taker (AC2SPT)
 Take pictures secretly (without preview or launching device's camera app) using CAMERA2 API
-## Screenshot
-![demo.png](https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/demo.png)
+## Preview
+<img src="preview/demo.png" width="30%">
 
 ## Usage
 ```java
