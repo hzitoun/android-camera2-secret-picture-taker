@@ -42,9 +42,9 @@ import java.util.Queue;
 import java.util.TreeMap;
 
 /**
+ * The aim of this service is to secretly take pictures (without preview or opening device's camera app)
+ * from all available cameras.
  * @author hzitoun (zitoun.hamed@gmail.com)
- *         The aim of this service is to secretly take pictures (without preview or opening device's camera app)
- *         from all available cameras.
  */
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP) //camera 2 api was added in API level 21

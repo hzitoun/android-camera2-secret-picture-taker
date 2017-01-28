@@ -23,11 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+
+/**
+ * Main Activity
+ * @author hzitoun (zitoun.hamed@gmail.com)
+ * */
 public class MainActivity extends AppCompatActivity implements OnPictureCapturedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
-
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
 
@@ -59,10 +63,10 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
     @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
-           // showToast("Done capturing all photos!");
+            showToast("Done capturing all photos!");
             return;
         }
-       // showToast("No camera detected!");
+        showToast("No camera detected!");
     }
 
     @Override
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
                     uploadFrontPhoto.setImageBitmap(scaled);
                 }
             });
-           // showToast("Picture saved to " + pictureUrl);
+            showToast("Picture saved to " + pictureUrl);
         }
     }
 

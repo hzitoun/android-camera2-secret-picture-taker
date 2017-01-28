@@ -3,8 +3,8 @@ package com.hzitoun.camera2SecretPictureTaker.listeners;
 import java.util.TreeMap;
 
 /**
+ * Photo capturing listener
  * @author hzitoun (hamed.zitoun@gmail.com)
- *         Photo capturing listener
  */
 public interface OnPictureCapturedListener {
 

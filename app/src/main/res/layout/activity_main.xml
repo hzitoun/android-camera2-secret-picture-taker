@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/search_bg_shadow">
+        android:background="@drawable/bg_shadow">
 
         <ImageView
             android:id="@+id/backIV"
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/search_bg_shadow">
+        android:background="@drawable/bg_shadow">
 
         <ImageView
             android:id="@+id/frontIV"
