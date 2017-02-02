@@ -31,7 +31,9 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
             picturesTaken.forEach((pictureUrl, pictureData) -> {
-              //do what you want the picture
+               //convert the byte array 'pictureData' to a bitmap (no need to read the file from the external storage) but in case you
+               //want to then use 'pictureUrl' which stores the picture taken's location on the device
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.length);
             });
             showToast("Done capturing all photos!");
             return;
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
                 //scale image to avoid POTENTIAL "Bitmap too large to be uploaded into a texture" when displaying into an ImageView
                 final int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
                 final Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
-               //do whatever you want with the bitmap
+               //do whatever you want with the bitmap or the scaled one
             });
             showToast("Picture saved to " + pictureUrl);
         }
