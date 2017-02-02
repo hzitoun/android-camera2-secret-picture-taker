@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         final Button btn = (Button) findViewById(R.id.startCaptureBtn);
         //start capturing when clicking on the button
         btn.setOnClickListener(v ->
-                //pass the activity (this) and the OnPictureCapturedListener (this) in parameters
+                //call PictureService#startCapturing method by passing the activity (this) and the OnPictureCapturedListener (this) in parameters
                 new PictureService().startCapturing(this, this)
         );
     }
