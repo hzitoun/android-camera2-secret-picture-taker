@@ -1,12 +1,12 @@
 # Android Camera2 Secret Picture Taker (AC2SPT)
 Take pictures secretly (without preview or launching device's camera app) using CAMERA2 API
 ## Preview
-<img src="preview/demo.png" width="30%">
+<img src="preview/demo.png" alt="preview android camera2 API secret picture taker" width="30%">
 
 ## Usage
 ```java
-//implements the OnPictureCapturedListener Interface 
-//implements the OnRequestPermissionsResultCallback in order to check for camera and external storage
+//implement  OnPictureCapturedListener to get pictures taken; count = NB AVAILABLE CAMERAS on the device
+//implement  OnRequestPermissionsResultCallback in order to check for camera and external storage
 //permissions because they are needed by the PictureService
 public class MainActivity extends AppCompatActivity implements OnPictureCapturedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -19,13 +19,13 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         final Button btn = (Button) findViewById(R.id.startCaptureBtn);
         //start capturing when clicking on the button
         btn.setOnClickListener(v ->
-                //pass the activity (this) and the OnPictureCapturedListener (thii) in parameters
+                //pass the activity (this) and the OnPictureCapturedListener (this) in parameters
                 new PictureService().startCapturing(this, this)
         );
     }
     //override this method to get a Map<PictureUrl, PictureData> 
      //it is called when we've done taking pictures from ALL AVAILABLE cameras
-    //or when no camera was detected on the device
+    //OR when NO camera was detected on the device
  @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
@@ -35,8 +35,9 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         showToast("No camera detected!");
     }
 
-//override this method to get a couple (pictureUrl, PictureData) 
-//(it is called when we've done taking picture from ONE camera)
+//override this method to get a couple (pictureUrl, PictureData)
+// use this method if you don't want to wait for ALL pictures to be ready 
+//(it is called when we've done taking picture from a camera)
  @Override
     public void onCaptureDone(String pictureUrl, byte[] pictureData) {
         if (pictureData != null && pictureUrl != null) {
