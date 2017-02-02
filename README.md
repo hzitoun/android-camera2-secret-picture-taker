@@ -19,7 +19,8 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         final Button btn = (Button) findViewById(R.id.startCaptureBtn);
         //start capturing when clicking on the button
         btn.setOnClickListener(v ->
-                //call PictureService#startCapturing method by passing the activity (this) and the OnPictureCapturedListener (this) in parameters
+                //call PictureService#startCapturing method by passing the activity (this) 
+                //and the OnPictureCapturedListener (this) in parameters
                 new PictureService().startCapturing(this, this)
         );
     }
@@ -29,21 +30,25 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
  @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
+            picturesTaken.forEach((pictureUrl, pictureData) -> {
+              //do what you want the picture
+            });
             showToast("Done capturing all photos!");
             return;
         }
         showToast("No camera detected!");
     }
 
-//override this method to get a couple (pictureUrl, PictureData)
-// use this method if you don't want to wait for ALL pictures to be ready 
-//(it is called when we've done taking picture from a camera)
+//override this method to get a couple (picture Url, picture Data)
+//use this method if you don't want to wait for ALL pictures to be ready 
+//(it is called when we've done taking picture from a single camera)
  @Override
     public void onCaptureDone(String pictureUrl, byte[] pictureData) {
         if (pictureData != null && pictureUrl != null) {
             runOnUiThread(() -> {
-                //scale image to avoid POTENTIAL "Bitmap too large to be uploaded into a texture" when displaying it in an ImageView
+                //convert byte array 'pictureData' to a bitmap (no need to read the file from the external storage)
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.length);
+                //scale image to avoid POTENTIAL "Bitmap too large to be uploaded into a texture" when displaying into an ImageView
                 final int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
                 final Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
                //do whatever you want with the bitmap
