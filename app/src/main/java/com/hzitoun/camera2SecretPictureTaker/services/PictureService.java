@@ -215,21 +215,11 @@ public class PictureService {
 
     private void saveImageToDisk(final byte[] bytes) {
         final File file = new File(Environment.getExternalStorageDirectory() + "/" + this.cameraDevice.getId() + "_pic.jpg");
-        OutputStream output = null;
-        try {
-            output = new FileOutputStream(file);
+        try (final OutputStream = new FileOutputStream(file)){
             output.write(bytes);
             this.picturesTaken.put(file.getPath(), bytes);
         } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (null != output) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            Log.e(TAG, "Exception occured while saving picture to external storage, " + e);
         }
     }
 
