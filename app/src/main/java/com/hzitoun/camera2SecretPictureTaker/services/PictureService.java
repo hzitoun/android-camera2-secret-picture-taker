@@ -215,7 +215,7 @@ public class PictureService {
 
     private void saveImageToDisk(final byte[] bytes) {
         final File file = new File(Environment.getExternalStorageDirectory() + "/" + this.cameraDevice.getId() + "_pic.jpg");
-        try (final OutputStream = new FileOutputStream(file)){
+        try (final OutputStream output = new FileOutputStream(file)) {
             output.write(bytes);
             this.picturesTaken.put(file.getPath(), bytes);
         } catch (IOException e) {
