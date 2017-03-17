@@ -50,7 +50,7 @@ import java.util.TreeMap;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP) //camera 2 api was added in API level 21
 public class PictureService {
 
-    private static final String TAG = "PictureService";
+    private static final String TAG = getClass().getSimpleName();
     private CameraDevice cameraDevice;
     private ImageReader imageReader;
     private Handler mBackgroundHandler;
@@ -81,7 +81,7 @@ public class PictureService {
         this.cameraIds = new LinkedList<>();
         try {
             final String[] cameraIdList = manager.getCameraIdList();
-            if (cameraIdList != null && cameraIdList.length != 0) {
+            if (cameraIdList != null && cameraIdList.length > 0) {
                 for (final String cameraId : cameraIdList) {
                     this.cameraIds.add(cameraId);
                 }
@@ -91,7 +91,7 @@ public class PictureService {
                 capturedListener.onDoneCapturingAllPhotos(picturesTaken);
             }
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Exception occured while accessing the list of cameras", e);
         }
     }
 
@@ -107,7 +107,7 @@ public class PictureService {
                 manager.openCamera(currentCameraId, stateCallback, null);
             }
         } catch (CameraAccessException e) {
-            Log.e(TAG, " exception opening camera " + currentCameraId + e.getMessage());
+            Log.e(TAG, " exception occured while opening camera " + currentCameraId, e);
         }
     }
 
@@ -148,8 +148,7 @@ public class PictureService {
             Log.e(TAG, "camera in error, int code " + error);
             if (cameraDevice != null) {
                 cameraDevice.close();
-            } else {
-                cameraDevice = null;
+                return;
             }
         }
     };
@@ -200,7 +199,7 @@ public class PictureService {
                     try {
                         session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
                     } catch (CameraAccessException e) {
-                        e.printStackTrace();
+                       Log.e(TAG, " exception occured while acessing " + currentCameraId, e);
                     }
                 }
 
@@ -209,7 +208,7 @@ public class PictureService {
                 }
             }, mBackgroundHandler);
         } catch (CameraAccessException e) {
-            e.printStackTrace();
+           Log.e(TAG, " exception occured while acessing " + currentCameraId, e);
         }
     }
 
@@ -219,7 +218,7 @@ public class PictureService {
             output.write(bytes);
             this.picturesTaken.put(file.getPath(), bytes);
         } catch (IOException e) {
-            Log.e(TAG, "Exception occured while saving picture to external storage, " + e);
+            Log.e(TAG, "Exception occured while saving picture to external storage ", e);
         }
     }
 
@@ -239,7 +238,7 @@ public class PictureService {
             mBackgroundThread = null;
             mBackgroundHandler = null;
         } catch (InterruptedException e) {
-            Log.e(TAG, "exception stopBackgroundThread" + e.getMessage());
+            Log.e(TAG, "exception occured while stoping BackgroundThread ", e);
         }
     }
 
