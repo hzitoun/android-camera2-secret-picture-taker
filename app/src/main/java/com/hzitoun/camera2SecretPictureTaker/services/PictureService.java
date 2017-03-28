@@ -118,7 +118,11 @@ public class PictureService {
             Log.d(TAG, "camera " + camera.getId() + " opened");
             cameraDevice = camera;
             Log.i(TAG, "Taking picture from camera " + camera.getId());
-            takePicture();
+            // take the picture after some time on purpose
+            new Handler().postDelayed(()  -> {
+                 takePicture();
+            }, 1000);
+            
         }
 
         @Override
