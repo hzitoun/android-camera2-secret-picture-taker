@@ -8,9 +8,9 @@ Here, I've chosen to just  display the two pictures taken within a vertical line
 
 ## Usage
 ```java
-//implement  OnPictureCapturedListener to get pictures taken; count = NB AVAILABLE CAMERAS on the device
+//implement  OnPictureCapturedListener to get pictures taken; pictures count = NB AVAILABLE CAMERAS on the device
 //implement  OnRequestPermissionsResultCallback in order to check for camera and external storage
-//permissions because they are needed by the PictureService
+//permissions since they are needed by the PictureService
 public class MainActivity extends AppCompatActivity implements OnPictureCapturedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
  @Override
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         );
     }
     //override this method to get a Map<PictureUrl, PictureData> 
-     //it is called when we've done taking pictures from ALL AVAILABLE cameras
+     //it is called when we've done taking pictures from ALL available cameras
     //OR when NO camera was detected on the device
  @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
                 //scale image to avoid POTENTIAL "Bitmap too large to be uploaded into a texture" when displaying into an ImageView
                 final int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
                 final Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
-               //do whatever you want with the bitmap or the scaled one
+               //do whatever you want with the bitmap or the scaled one...
             });
             showToast("Picture saved to " + pictureUrl);
         }
