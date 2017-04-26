@@ -28,9 +28,9 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         );
     }
     //override this method to get a Map<PictureUrl, PictureData> 
-     //it is called when we've done taking pictures from ALL available cameras
+    //it is called when we've done taking pictures from ALL available cameras
     //OR when NO camera was detected on the device
- @Override
+    @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
             picturesTaken.forEach((pictureUrl, pictureData) -> {
@@ -44,10 +44,10 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         showToast("No camera detected!");
     }
 
-//override this method to get a couple (picture Url, picture Data)
-//use this method if you don't want to wait for ALL pictures to be ready 
-//(it is called when we've done taking picture from a single camera)
- @Override
+    //override this method to get a couple (picture Url, picture Data)
+    //use this method if you don't want to wait for ALL pictures to be ready 
+    //(it is called when we've done taking picture from a single camera)
+    @Override
     public void onCaptureDone(String pictureUrl, byte[] pictureData) {
         if (pictureData != null && pictureUrl != null) {
             runOnUiThread(() -> {
@@ -60,6 +60,12 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
             });
             showToast("Picture saved to " + pictureUrl);
         }
+    }
+    
+    private void showToast(final String text) {
+        runOnUiThread(() ->
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
+        );
     }
 
 }
