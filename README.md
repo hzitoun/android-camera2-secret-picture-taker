@@ -2,7 +2,7 @@
 Take pictures secretly (without preview or launching device's camera app) using CAMERA2 API
 ## Sample
 
-Here, I've chosen to just  display the two pictures taken within a vertical linear layout...
+Here, I've chosen to just  display the two pictures taken within a vertical linear layout.
 
 <img src="preview/demo.png" alt="preview android camera2 API secret picture taker" width="30%">
 
@@ -70,6 +70,11 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
 
 }
 ```
+
+## How can I support this project?
+- Star this GitHub repo :star:
+- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
+
 ## Contributors
 
 Hamed ZITOUN <zitoun.hamed@gmail.com>
