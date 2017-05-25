@@ -1,35 +1,44 @@
 # Android Camera2 Secret Picture Taker (AC2SPT)
-Take pictures secretly (without preview or launching device's camera app) using CAMERA2 API
+Take pictures secretly (without preview or launching device's camera app) from all available cameras using CAMERA2 API
+
+## Usage
+
+- Create a new instance of ```PictureCapturingService ```
+- Implement PictureCapturingListener and override the following methods:
+    -  ``` void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) ``` which is called when we've done taking pictures from ALL available cameras OR when NO camera was detected on the device;
+    -  ``` void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) ``` to get a couple (picture Url, picture Data). Use this method if you don't want to wait for ALL pictures to be ready;
+- Call ```PictureCapturingService#startCapturing(final PictureCapturingListener listener) ``` and pass the listener you just implemented
+
+## How can I support this project?
+- Star this GitHub repo :star:
+- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
+
 ## Sample
 
 Here, I've chosen to just  display the two pictures taken within a vertical linear layout.
 
 <img src="preview/demo.png" alt="preview android camera2 API secret picture taker" width="30%">
 
-## Usage
-```java
-//implement  OnPictureCapturedListener to get pictures taken; pictures count = NB AVAILABLE CAMERAS on the device
-//implement  OnRequestPermissionsResultCallback in order to check for camera and external storage
-//permissions since they are needed by the PictureService
-public class MainActivity extends AppCompatActivity implements OnPictureCapturedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+Here is a code snippet of how to use the service:
 
- @Override
+```java
+public class MainActivity extends AppCompatActivity implements PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
+     private APictureCapturingService pictureService;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //check for camera and external storage permissions
         checkPermissions();
         final Button btn = (Button) findViewById(R.id.startCaptureBtn);
+        pictureService = PictureCapturingServiceImpl.getInstance(this);
         //start capturing when clicking on the button
         btn.setOnClickListener(v ->
-                //call PictureService#startCapturing method by passing the activity (this) 
-                //and the OnPictureCapturedListener (this) in parameters
-                new PictureService().startCapturing(this, this)
+                pictureService.startCapturing(this)
         );
     }
-    //override this method to get a Map<PictureUrl, PictureData> 
-    //it is called when we've done taking pictures from ALL available cameras
-    //OR when NO camera was detected on the device
+
     @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
@@ -44,9 +53,6 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         showToast("No camera detected!");
     }
 
-    //override this method to get a couple (picture Url, picture Data)
-    //use this method if you don't want to wait for ALL pictures to be ready 
-    //(it is called when we've done taking picture from a single camera)
     @Override
     public void onCaptureDone(String pictureUrl, byte[] pictureData) {
         if (pictureData != null && pictureUrl != null) {
@@ -70,10 +76,6 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
 
 }
 ```
-
-## How can I support this project?
-- Star this GitHub repo :star:
-- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
 
 ## Contributors
 
