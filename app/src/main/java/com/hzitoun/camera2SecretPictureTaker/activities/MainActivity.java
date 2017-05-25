@@ -16,8 +16,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.hzitoun.camera2SecretPictureTaker.R;
-import com.hzitoun.camera2SecretPictureTaker.listeners.OnPictureCapturedListener;
-import com.hzitoun.camera2SecretPictureTaker.services.PictureService;
+import com.hzitoun.camera2SecretPictureTaker.listeners.PictureCapturingListener;
+import com.hzitoun.camera2SecretPictureTaker.services.APictureCapturingService;
+import com.hzitoun.camera2SecretPictureTaker.services.PictureCapturingServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +26,19 @@ import java.util.TreeMap;
 
 
 /**
- * Main Activity
+ * App's Main Activity
+ *
  * @author hzitoun (zitoun.hamed@gmail.com)
- * */
-public class MainActivity extends AppCompatActivity implements OnPictureCapturedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+ */
+public class MainActivity extends AppCompatActivity implements PictureCapturingListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
 
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
+
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
+    private APictureCapturingService pictureService;
 
 
     @Override
@@ -44,8 +49,11 @@ public class MainActivity extends AppCompatActivity implements OnPictureCaptured
         uploadBackPhoto = (ImageView) findViewById(R.id.backIV);
         uploadFrontPhoto = (ImageView) findViewById(R.id.frontIV);
         final Button btn = (Button) findViewById(R.id.startCaptureBtn);
-        btn.setOnClickListener(v ->
-                new PictureService().startCapturing(this, this)
+        pictureService = PictureCapturingServiceImpl.getInstance(this);
+        btn.setOnClickListener(v -> {
+                    showToast("Starting capture!");
+                    pictureService.startCapturing(this);
+                }
         );
     }
 

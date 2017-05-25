@@ -3,32 +3,28 @@ package com.hzitoun.camera2SecretPictureTaker.services;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.Surface;
-import android.view.WindowManager;
 
-import com.hzitoun.camera2SecretPictureTaker.listeners.OnPictureCapturedListener;
+import com.hzitoun.camera2SecretPictureTaker.listeners.PictureCapturingListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,59 +32,55 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.TreeMap;
 
+
 /**
  * The aim of this service is to secretly take pictures (without preview or opening device's camera app)
  * from all available cameras.
+ *
  * @author hzitoun (zitoun.hamed@gmail.com)
  */
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP) //camera 2 api was added in API level 21
-public class PictureService {
+public class PictureCapturingServiceImpl extends APictureCapturingService {
 
-    private static final String TAG = PictureService.class.getSimpleName();
+    private static final String TAG = PictureCapturingServiceImpl.class.getSimpleName();
+
+    private boolean cameraClosed;
     private CameraDevice cameraDevice;
     private ImageReader imageReader;
-    private Handler mBackgroundHandler;
-    private HandlerThread mBackgroundThread;
-    private Activity context;
-    private WindowManager windowManager;
-    private CameraManager manager;
     private TreeMap<String, byte[]> picturesTaken;
-    private OnPictureCapturedListener capturedListener;
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private PictureCapturingListener capturingListener;
     private String currentCameraId;
+    //camera ids queue;
     private Queue<String> cameraIds;
 
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+
+    /***
+     * private constructor, obliging the use of the {@see getInstance} method
+     * */
+    private PictureCapturingServiceImpl(final Activity activity) {
+        super(activity);
     }
 
-    public void startCapturing(final Activity activity,
-                               final OnPictureCapturedListener capturedListener) {
+
+    public void startCapturing(final PictureCapturingListener listener) {
         this.picturesTaken = new TreeMap<>();
-        this.context = activity;
-        this.manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
-        this.windowManager = context.getWindowManager();
-        this.capturedListener = capturedListener;
+        this.capturingListener = listener;
         this.cameraIds = new LinkedList<>();
         try {
-            final String[] cameraIdList = manager.getCameraIdList();
-            if (cameraIdList != null && cameraIdList.length > 0) {
-                for (final String cameraId : cameraIdList) {
-                    this.cameraIds.add(cameraId);
-                }
+            final String[] cameraIds = manager.getCameraIdList();
+            if (cameraIds.length > 0) {
+                this.cameraIds.addAll(Arrays.asList(cameraIds));
                 this.currentCameraId = this.cameraIds.poll();
                 openCameraAndTakePicture();
             } else {
-                capturedListener.onDoneCapturingAllPhotos(picturesTaken);
+                capturingListener.onDoneCapturingAllPhotos(picturesTaken);
             }
         } catch (CameraAccessException e) {
             Log.e(TAG, "Exception occurred while accessing the list of cameras", e);
@@ -96,7 +88,7 @@ public class PictureService {
     }
 
     private void openCameraAndTakePicture() {
-        startBackgroundThread();
+        //startBackgroundThread();
         Log.d(TAG, "opening camera " + currentCameraId);
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
@@ -115,34 +107,36 @@ public class PictureService {
     private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
+            cameraClosed = false;
             Log.d(TAG, "camera " + camera.getId() + " opened");
             cameraDevice = camera;
+            Log.e(TAG, "camera device ******* " + cameraDevice);
             Log.i(TAG, "Taking picture from camera " + camera.getId());
-            // take the picture after some time on purpose
-            new Handler().postDelayed(()  -> {
-                 takePicture();
-            }, 1000);
-            
+            //Take the picture after some delay. It may resolve getting a black dark photos.
+            new Handler().postDelayed(() ->
+                            takePicture()
+                    , 500);
+
         }
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
             Log.d(TAG, " camera " + camera.getId() + " disconnected");
-            if (cameraDevice != null) {
+            if (cameraDevice != null && !cameraClosed) {
+                cameraClosed = true;
                 cameraDevice.close();
             }
         }
 
         @Override
         public void onClosed(@NonNull CameraDevice camera) {
+            cameraClosed = true;
             Log.d(TAG, "camera " + camera.getId() + " closed");
-            stopBackgroundThread();
+            //once the current camera has been closed, start taking another picture
             if (!cameraIds.isEmpty()) {
-                new Handler().postDelayed(() ->
-                                takeAnotherPicture()
-                        , 100);
+                takeAnotherPicture();
             } else {
-                capturedListener.onDoneCapturingAllPhotos(picturesTaken);
+                capturingListener.onDoneCapturingAllPhotos(picturesTaken);
             }
         }
 
@@ -150,9 +144,8 @@ public class PictureService {
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
             Log.e(TAG, "camera in error, int code " + error);
-            if (cameraDevice != null) {
+            if (cameraDevice != null && !cameraClosed) {
                 cameraDevice.close();
-                return;
             }
         }
     };
@@ -166,11 +159,9 @@ public class PictureService {
         try {
             final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
             Size[] jpegSizes = null;
-            if (characteristics != null) {
-                if (characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP) != null) {
-                    jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-                            .getOutputSizes(ImageFormat.JPEG);
-                }
+            StreamConfigurationMap streamConfigurationMap = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            if (streamConfigurationMap != null) {
+                jpegSizes = streamConfigurationMap.getOutputSizes(ImageFormat.JPEG);
             }
             int width = 640;
             int height = 480;
@@ -179,42 +170,40 @@ public class PictureService {
                 height = jpegSizes[0].getHeight();
             }
             final ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
-            final List<Surface> outputSurfaces = new ArrayList<>(2);
+            final List<Surface> outputSurfaces = new ArrayList<>();
             outputSurfaces.add(reader.getSurface());
             final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            final int rotation = this.windowManager.getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation());
             ImageReader.OnImageAvailableListener readerListener = (ImageReader readerL) -> {
                 final Image image = readerL.acquireLatestImage();
                 final ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 final byte[] bytes = new byte[buffer.capacity()];
                 buffer.get(bytes);
                 saveImageToDisk(bytes);
-                if (image != null) {
-                    image.close();
-                }
+                image.close();
             };
-            reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
+            reader.setOnImageAvailableListener(readerListener, null);
             cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     try {
-                        session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
+                        session.capture(captureBuilder.build(), captureListener, null);
                     } catch (CameraAccessException e) {
-                       Log.e(TAG, " exception occurred while accessing " + currentCameraId, e);
+                        Log.e(TAG, " exception occurred while accessing " + currentCameraId, e);
                     }
                 }
 
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession session) {
                 }
-            }, mBackgroundHandler);
+            }, null);
         } catch (CameraAccessException e) {
-           Log.e(TAG, " exception occurred while accessing " + currentCameraId, e);
+            Log.e(TAG, " exception occurred while accessing " + currentCameraId, e);
         }
     }
+
 
     private void saveImageToDisk(final byte[] bytes) {
         final File file = new File(Environment.getExternalStorageDirectory() + "/" + this.cameraDevice.getId() + "_pic.jpg");
@@ -226,36 +215,14 @@ public class PictureService {
         }
     }
 
-
-    private void startBackgroundThread() {
-        if (mBackgroundThread == null) {
-            mBackgroundThread = new HandlerThread("Camera Background" + currentCameraId);
-            mBackgroundThread.start();
-            mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-        }
-    }
-
-    private void stopBackgroundThread() {
-        mBackgroundThread.quitSafely();
-        try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
-            mBackgroundHandler = null;
-        } catch (InterruptedException e) {
-            Log.e(TAG, "exception occurred while stoping BackgroundThread ", e);
-        }
-    }
-
-
     private void takeAnotherPicture() {
-        startBackgroundThread();
         this.currentCameraId = this.cameraIds.poll();
         openCameraAndTakePicture();
     }
 
     private void closeCamera() {
         Log.d(TAG, "closing camera " + cameraDevice.getId());
-        if (null != cameraDevice) {
+        if (null != cameraDevice && !cameraClosed) {
             cameraDevice.close();
             cameraDevice = null;
         }
@@ -272,10 +239,14 @@ public class PictureService {
                                        @NonNull TotalCaptureResult result) {
             super.onCaptureCompleted(session, request, result);
             if (picturesTaken.lastEntry() != null) {
-                capturedListener.onCaptureDone(picturesTaken.lastEntry().getKey(), picturesTaken.lastEntry().getValue());
+                capturingListener.onCaptureDone(picturesTaken.lastEntry().getKey(), picturesTaken.lastEntry().getValue());
                 Log.i(TAG, "done taking picture from camera " + cameraDevice.getId());
             }
             closeCamera();
         }
     };
+
+    public static APictureCapturingService getInstance(final Activity activity) {
+        return new PictureCapturingServiceImpl(activity);
+    }
 }
