@@ -67,6 +67,14 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
     private PictureCapturingServiceImpl(final Activity activity) {
         super(activity);
     }
+    
+     /**
+     * @param activity the activity used to get the app's context and the display manager
+     * @return a new instance
+     */
+    public static APictureCapturingService getInstance(final Activity activity) {
+        return new PictureCapturingServiceImpl(activity);
+    }
 
     /**
      * starts pictures capturing process.
@@ -247,11 +255,5 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
     }
 
 
-    /**
-     * @param activity the activity used to get the app's context and display manager
-     * @return new instance
-     */
-    public static APictureCapturingService getInstance(final Activity activity) {
-        return new PictureCapturingServiceImpl(activity);
-    }
+ 
 }
