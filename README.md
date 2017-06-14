@@ -3,11 +3,11 @@ Take pictures secretly (without preview or launching device's camera app) from a
 
 ## Usage
 
-- Implement the interface ```PictureCapturingListener``` and override the following methods:
+- Implement the interface <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/listeners/PictureCapturingListener.java">```PictureCapturingListener```</a> and override the following methods:
     -  ``` void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) ``` which is called when we've done taking pictures from ALL available cameras OR when NO camera was detected on the device;
     -  ``` void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) ``` to get a couple (picture Url, picture Data). Use this method if you don't want to wait for ALL pictures to be ready;
-- Create a new instance of ```APictureCapturingService```
-- Start capture by calling the method ```APictureCapturingService#startCapturing(PictureCapturingListener listener) ``` and pass the listener you've just implemented
+- Create a new instance of <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/APictureCapturingService.java">```APictureCapturingService``` </a> using <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/PictureCapturingServiceImpl.java">```PictureCapturingServiceImpl#getInstance()```</a> method;
+- **Start capture** by calling the method ```APictureCapturingService#startCapturing(PictureCapturingListener listener) ``` and pass the listener you've just implemented
 
 ## How can I support this project?
 - Star this GitHub repo :star:
