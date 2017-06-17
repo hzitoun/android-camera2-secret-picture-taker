@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 
 /**
- * App's Main Activity
+ * App's Main Activity showing a simple usage of the picture taking service.
  *
  * @author hzitoun (zitoun.hamed@gmail.com)
  */
@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         }
     }
 
+    /**
+     * checking  permissions at Runtime.
+     */
     @TargetApi(Build.VERSION_CODES.M)
     private void checkPermissions() {
         final String[] requiredPermissions = {

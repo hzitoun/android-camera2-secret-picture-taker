@@ -9,13 +9,13 @@ import android.view.Surface;
 import com.hzitoun.camera2SecretPictureTaker.listeners.PictureCapturingListener;
 
 /**
- * Abstract Picture taking service.
+ * Abstract Picture Taking Service.
  *
  * @author hzitoun (zitoun.hamed@gmail.com)
  */
 public abstract class APictureCapturingService {
 
-    public static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -25,8 +25,8 @@ public abstract class APictureCapturingService {
     }
 
     private final Activity activity;
-    protected final Context context;
-    protected final CameraManager manager;
+    final Context context;
+    final CameraManager manager;
 
     /***
      * constructor.
@@ -40,9 +40,9 @@ public abstract class APictureCapturingService {
     }
 
     /***
-     * get display orientation
-     * */
-    protected int getOrientation() {
+     * @return  orientation
+     */
+    int getOrientation() {
         final int rotation = this.activity.getWindowManager().getDefaultDisplay().getRotation();
         return ORIENTATIONS.get(rotation);
     }

@@ -41,34 +41,38 @@ import java.util.TreeMap;
 
 /**
  * The aim of this service is to secretly take pictures (without preview or opening device's camera app)
- * from all available cameras.
+ * from all available cameras using Android Camera 2 API
  *
  * @author hzitoun (zitoun.hamed@gmail.com)
  */
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP) //camera 2 api was added in API level 21
+@TargetApi(Build.VERSION_CODES.LOLLIPOP) //NOTE: camera 2 api was added in API level 21
 public class PictureCapturingServiceImpl extends APictureCapturingService {
 
     private static final String TAG = PictureCapturingServiceImpl.class.getSimpleName();
 
-    private boolean cameraClosed;
     private CameraDevice cameraDevice;
     private ImageReader imageReader;
+    /***
+     * camera ids queue.
+     */
+    private Queue<String> cameraIds;
+    private String currentCameraId;
+    private boolean cameraClosed;
+    /**
+     * stores a sorted map of (pictureUrlOnDisk, PictureData).
+     */
     private TreeMap<String, byte[]> picturesTaken;
     private PictureCapturingListener capturingListener;
-    private String currentCameraId;
-    //camera ids queue;
-    private Queue<String> cameraIds;
-
 
     /***
-     * private constructor, meant to force the use of {@see getInstance} method
+     * private constructor, meant to force the use of {@link #getInstance}  method
      */
     private PictureCapturingServiceImpl(final Activity activity) {
         super(activity);
     }
-    
-     /**
+
+    /**
      * @param activity the activity used to get the app's context and the display manager
      * @return a new instance
      */
@@ -92,9 +96,10 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
                 this.currentCameraId = this.cameraIds.poll();
                 openCamera();
             } else {
+                //No camera detected!
                 capturingListener.onDoneCapturingAllPhotos(picturesTaken);
             }
-        } catch (CameraAccessException e) {
+        } catch (final CameraAccessException e) {
             Log.e(TAG, "Exception occurred while accessing the list of cameras", e);
         }
     }
@@ -109,7 +114,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
                     == PackageManager.PERMISSION_GRANTED) {
                 manager.openCamera(currentCameraId, stateCallback, null);
             }
-        } catch (CameraAccessException e) {
+        } catch (final CameraAccessException e) {
             Log.e(TAG, " exception occurred while opening camera " + currentCameraId, e);
         }
     }
@@ -146,13 +151,12 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
             Log.i(TAG, "Taking picture from camera " + camera.getId());
             //Take the picture after some delay. It may resolve getting a black dark photos.
             new Handler().postDelayed(() -> {
-                        try {
-                            takePicture();
-                        } catch (CameraAccessException e) {
-                            Log.e(TAG, " exception occurred while taking picture from " + currentCameraId, e);
-                        }
-                    }
-                    , 500);
+                try {
+                    takePicture();
+                } catch (final CameraAccessException e) {
+                    Log.e(TAG, " exception occurred while taking picture from " + currentCameraId, e);
+                }
+            }, 500);
         }
 
         @Override
@@ -255,5 +259,4 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
     }
 
 
- 
 }
