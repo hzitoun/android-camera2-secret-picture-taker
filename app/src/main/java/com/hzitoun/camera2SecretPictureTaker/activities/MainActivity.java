@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
 
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
+    
+     //service          
     private APictureCapturingService pictureService;
 
 
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         uploadBackPhoto = (ImageView) findViewById(R.id.backIV);
         uploadFrontPhoto = (ImageView) findViewById(R.id.frontIV);
         final Button btn = (Button) findViewById(R.id.startCaptureBtn);
+        //getting instance of the Service from PictureCapturingServiceImpl
         pictureService = PictureCapturingServiceImpl.getInstance(this);
         btn.setOnClickListener(v -> {
                     showToast("Starting capture!");
@@ -77,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         showToast("No camera detected!");
     }
 
+    /**
+    * Displaying the pictures taken.
+    */             
     @Override
     public void onCaptureDone(String pictureUrl, byte[] pictureData) {
         if (pictureData != null && pictureUrl != null) {
@@ -117,10 +123,10 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
                 Manifest.permission.CAMERA,
         };
         final List<String> neededPermissions = new ArrayList<>();
-        for (final String p : requiredPermissions) {
+        for (final String permission : requiredPermissions) {
             if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                    p) != PackageManager.PERMISSION_GRANTED) {
-                neededPermissions.add(p);
+                    permission) != PackageManager.PERMISSION_GRANTED) {
+                neededPermissions.add(permission);
             }
         }
         if (!neededPermissions.isEmpty()) {
