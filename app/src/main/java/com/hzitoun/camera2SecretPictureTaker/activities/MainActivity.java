@@ -30,8 +30,7 @@ import java.util.TreeMap;
  *
  * @author hzitoun (zitoun.hamed@gmail.com)
  */
-public class MainActivity extends AppCompatActivity implements PictureCapturingListener,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends AppCompatActivity implements PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
@@ -54,10 +53,9 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         //getting instance of the Service from PictureCapturingServiceImpl
         pictureService = PictureCapturingServiceImpl.getInstance(this);
         btn.setOnClickListener(v -> {
-                    showToast("Starting capture!");
-                    pictureService.startCapturing(this);
-                }
-        );
+               showToast("Starting capture!");
+               pictureService.startCapturing(this);
+        });
     }
 
     /**
@@ -71,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         );
     }
 
+    /**
+    * We've finished taking pictures from all phone's cameras
+    */    
     @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
