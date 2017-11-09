@@ -57,6 +57,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
      * camera ids queue.
      */
     private Queue<String> cameraIds;
+    
     private String currentCameraId;
     private boolean cameraClosed;
     /**
@@ -81,10 +82,11 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
     }
 
     /**
-     * starts pictures capturing process.
+     * Starts pictures capturing treatment.
      *
      * @param listener picture capturing listener
      */
+    @Override
     public void startCapturing(final PictureCapturingListener listener) {
         this.picturesTaken = new TreeMap<>();
         this.capturingListener = listener;
@@ -218,7 +220,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
                     public void onConfigured(@NonNull CameraCaptureSession session) {
                         try {
                             session.capture(captureBuilder.build(), captureListener, null);
-                        } catch (CameraAccessException e) {
+                        } catch (final CameraAccessException e) {
                             Log.e(TAG, " exception occurred while accessing " + currentCameraId, e);
                         }
                     }
@@ -236,7 +238,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
         try (final OutputStream output = new FileOutputStream(file)) {
             output.write(bytes);
             this.picturesTaken.put(file.getPath(), bytes);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Log.e(TAG, "Exception occurred while saving picture to external storage ", e);
         }
     }
