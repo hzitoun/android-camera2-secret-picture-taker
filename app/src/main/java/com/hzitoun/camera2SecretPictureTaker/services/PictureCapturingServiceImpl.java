@@ -234,7 +234,8 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
 
 
     private void saveImageToDisk(final byte[] bytes) {
-        final File file = new File(Environment.getExternalStorageDirectory() + "/" + this.cameraDevice.getId() + "_pic.jpg");
+        final String cameraId = this.cameraDevice == null ? UUID.randomUUID().toString() : this.cameraDevice.getId();
+        final File file = new File(Environment.getExternalStorageDirectory() + "/" + cameraId + "_pic.jpg");
         try (final OutputStream output = new FileOutputStream(file)) {
             output.write(bytes);
             this.picturesTaken.put(file.getPath(), bytes);
