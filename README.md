@@ -18,11 +18,7 @@ The <a href="https://developer.android.com/reference/android/hardware/camera2/pa
 
 ## Sample
 
-Here, I've chosen to just  display the two pictures taken within a vertical linear layout.
-
-<img src="preview/demo.png" alt="preview android camera2 API secret picture taker" width="30%">
-
-Here is a code snippet of how to use the service:
+Here, I've chosen to just  display the two pictures taken within a vertical linear layout. Here is a code snippet of how to use the service:
 
 ```java
 public class MainActivity extends AppCompatActivity implements PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
