@@ -49,10 +49,13 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         uploadFrontPhoto = findViewById(R.id.frontIV);
         final Button btn = findViewById(R.id.startCaptureBtn);
         //getting instance of the Service from PictureCapturingServiceImpl
-        pictureService = PictureCapturingServiceImpl.getInstance(/*PictureCapturingListener*/this);
+        // The activity is used to get screen orientation form window manager and
+        // get CameraManager form context
+        // OPTIMIZE: replace Activity with Context for non-Activity situation
+        pictureService = PictureCapturingServiceImpl.getInstance(/*Activity*/ this);
         btn.setOnClickListener(v -> {
             showToast("Starting capture!");
-            pictureService.startCapturing(this);
+            pictureService.startCapturing(/*PictureCapturingListener*/ this);
         });
     }
 
