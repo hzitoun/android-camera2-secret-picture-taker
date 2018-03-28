@@ -1,10 +1,10 @@
 package com.hzitoun.camera2SecretPictureTaker.services;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.camera2.CameraManager;
 import android.util.SparseIntArray;
 import android.view.Surface;
+import android.view.WindowManager;
 
 import com.hzitoun.camera2SecretPictureTaker.listeners.PictureCapturingListener;
 
@@ -24,27 +24,30 @@ public abstract class APictureCapturingService {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    private final Activity activity;
     final Context context;
     final CameraManager manager;
 
     /***
      * constructor.
      *
-     * @param activity the activity used to get display manager and the application context
+     * @param context the context used to get display manager and the application context
      */
-    APictureCapturingService(final Activity activity) {
-        this.activity = activity;
-        this.context = activity.getApplicationContext();
-        this.manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
+    APictureCapturingService(final Context context) {
+        this.context = context.getApplicationContext();
+        this.manager = (CameraManager) this.context.getSystemService(Context.CAMERA_SERVICE);
     }
 
     /***
-     * @return  orientation
+     * @return orientation
      */
     int getOrientation() {
-        final int rotation = this.activity.getWindowManager().getDefaultDisplay().getRotation();
-        return ORIENTATIONS.get(rotation);
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager != null) {
+            final int rotation = windowManager.getDefaultDisplay().getRotation();
+            return ORIENTATIONS.get(rotation);
+        } else {
+            return ORIENTATIONS.get(/*default*/0);
+        }
     }
 
 

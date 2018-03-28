@@ -2,7 +2,7 @@ package com.hzitoun.camera2SecretPictureTaker.services;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
@@ -18,6 +18,7 @@ import android.media.ImageReader;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -50,6 +51,8 @@ import java.util.TreeMap;
 public class PictureCapturingServiceImpl extends APictureCapturingService {
 
     private static final String TAG = PictureCapturingServiceImpl.class.getSimpleName();
+    private HandlerThread handlerThread;
+    private Handler backgroundHandler;
 
     /***
      * camera ids queue.
@@ -67,16 +70,17 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
     /***
      * private constructor, meant to force the use of {@link #getInstance}  method
      */
-    private PictureCapturingServiceImpl(final Activity activity) {
-        super(activity);
+    private PictureCapturingServiceImpl(final Context context) {
+        super(context);
     }
 
     /**
-     * @param activity the activity used to get the app's context and the display manager
+     * @param context the context used to get the app's context and the display manager
      * @return a new instance
      */
-    public static APictureCapturingService getInstance(final Activity activity) {
-        return new PictureCapturingServiceImpl(activity);
+    @NonNull
+    public static APictureCapturingService getInstance(@NonNull final Context context) {
+        return new PictureCapturingServiceImpl(context);
     }
 
     /**
@@ -86,6 +90,14 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
      */
     @Override
     public void startCapturing(final PictureCapturingListener listener) {
+        if (handlerThread != null) {
+            // when last capture meet exceptions, release handlerThread first.
+            handlerThread.quitSafely();
+        }
+
+        handlerThread = new HandlerThread("CameraHandlerThread");
+        handlerThread.start();
+        backgroundHandler = new Handler(handlerThread.getLooper());
         this.picturesTaken = new TreeMap<>();
         this.capturingListener = listener;
         this.cameraIds = new LinkedList<>();
@@ -112,7 +124,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
                     && ActivityCompat.checkSelfPermission(context,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                manager.openCamera(currentCameraId, cameraDeviceStateCallback(),/*work handler*/ null);
+                manager.openCamera(currentCameraId, cameraDeviceStateCallback(), backgroundHandler);
             }
         } catch (final CameraAccessException e) {
             Log.e(TAG, " exception occurred while opening camera " + currentCameraId, e);
@@ -126,14 +138,16 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
             public void onOpened(@NonNull CameraDevice camera) {
                 Log.d(TAG, "camera " + camera.getId() + " opened");
                 Log.i(TAG, "Taking picture from camera " + camera.getId());
-                //Take the picture after some delay. It may resolve getting a black dark photos.
-                new Handler().post(() -> {
+
+                //Take the picture after some delay. It may resolve getting a black dark photo.
+                int delayMillis = 0;// Change this if you do get a black photo.
+                backgroundHandler.postDelayed(() -> {
                     try {
                         takePicture(camera);
                     } catch (final CameraAccessException e) {
                         Log.e(TAG, " exception occurred while taking picture from " + currentCameraId, e);
                     }
-                });// no more delay
+                }, delayMillis);
             }
 
             @Override
@@ -183,7 +197,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
         // The key to achieve non-preview capture:
         // 1. Output into the ImageReader's surface.
         // 2. target the ImageReader's surface, so that you can get Image form listener.
-        cameraDevice.createCaptureSession(outputSurfaces, cameraCaptureSessionStateCallback(cameraDevice, reader), null);
+        cameraDevice.createCaptureSession(outputSurfaces, cameraCaptureSessionStateCallback(cameraDevice, reader), backgroundHandler);
 
         // So if you want to switch between preview and non-preview,
         // just replace the target and output with ImageReader's SurfaceView or anther available SurfaceView
@@ -196,7 +210,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
             @Override
             public void onConfigured(@NonNull CameraCaptureSession session) {
                 try {
-                    session.capture(request(), captureCallback(), null);
+                    session.capture(request(), captureCallback(), backgroundHandler);
                 } catch (final CameraAccessException e) {
                     Log.e(TAG, " exception occurred while accessing " + currentCameraId, e);
                 }
@@ -216,7 +230,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
                             saveImageToDisk(bytes, cameraDevice.getId());
                             image.close();
                         },
-                        /*work handler*/ null);//OPTIMIZE: work in a separate HandlerThread
+                        backgroundHandler);
                 return builder.build();
             }
 
@@ -256,6 +270,7 @@ public class PictureCapturingServiceImpl extends APictureCapturingService {
 
             @Override
             public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+                Log.d(TAG, "onConfigureFailed() called with: session = [" + session + "]");
             }
         };
     }
