@@ -32,13 +32,12 @@ import java.util.TreeMap;
  */
 public class MainActivity extends AppCompatActivity implements PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-
-    public static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
 
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
-    
-     //service          
+
+    //service
     private APictureCapturingService pictureService;
 
     @Override
@@ -50,10 +49,10 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         uploadFrontPhoto = findViewById(R.id.frontIV);
         final Button btn = findViewById(R.id.startCaptureBtn);
         //getting instance of the Service from PictureCapturingServiceImpl
-        pictureService = PictureCapturingServiceImpl.getInstance(this);
+        pictureService = PictureCapturingServiceImpl.getInstance(/*PictureCapturingListener*/this);
         btn.setOnClickListener(v -> {
-               showToast("Starting capture!");
-               pictureService.startCapturing(this);
+            showToast("Starting capture!");
+            pictureService.startCapturing(this);
         });
     }
 
@@ -69,8 +68,9 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
     }
 
     /**
-    * We've finished taking pictures from all phone's cameras
-    */    
+     * PictureCapturingListener:
+     * We've finished taking pictures from all phone's cameras
+     */
     @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
@@ -81,8 +81,9 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
     }
 
     /**
-    * Displaying the pictures taken.
-    */             
+     * PictureCapturingListener:
+     * Displaying the pictures taken.
+     */
     @Override
     public void onCaptureDone(String pictureUrl, byte[] pictureData) {
         if (pictureData != null && pictureUrl != null) {
