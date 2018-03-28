@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
 
 Hamed ZITOUN <zitoun.hamed@gmail.com>
 
+XieEDeHeiShou <qq2325690622@gmail.com>
+
 ## Help
 
 If you run into issues, please don't hesitate to find help on the GitHub project.
