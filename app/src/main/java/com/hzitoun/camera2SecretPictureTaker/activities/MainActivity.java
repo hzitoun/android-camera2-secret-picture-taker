@@ -41,15 +41,14 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
      //service          
     private APictureCapturingService pictureService;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermissions();
-        uploadBackPhoto = (ImageView) findViewById(R.id.backIV);
-        uploadFrontPhoto = (ImageView) findViewById(R.id.frontIV);
-        final Button btn = (Button) findViewById(R.id.startCaptureBtn);
+        uploadBackPhoto = findViewById(R.id.backIV);
+        uploadFrontPhoto = findViewById(R.id.frontIV);
+        final Button btn = findViewById(R.id.startCaptureBtn);
         //getting instance of the Service from PictureCapturingServiceImpl
         pictureService = PictureCapturingServiceImpl.getInstance(this);
         btn.setOnClickListener(v -> {
