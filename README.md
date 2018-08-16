@@ -6,11 +6,11 @@ The <a href="https://developer.android.com/reference/android/hardware/camera2/pa
 
 ## Usage
 
-- Implement the interface <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/listeners/PictureCapturingListener.java">```PictureCapturingListener```</a> and override the following methods:
+1. Implement the interface (capture listener) <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/listeners/PictureCapturingListener.java">```PictureCapturingListener```</a> and override the following methods:
     -  **void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken)** which is called when we've done taking pictures from ALL available cameras OR when NO camera was detected on the device;
     -  **void onCaptureDone(String pictureUrl, byte[] pictureData)** to get a couple (picture Url, picture Data). Use this method if you don't want to wait for ALL pictures to be ready;
-- Create a new instance of <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/APictureCapturingService.java">```APictureCapturingService``` </a> using <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/PictureCapturingServiceImpl.java">```PictureCapturingServiceImpl#getInstance()```</a> method;
-- **Start capture** by calling the method ```APictureCapturingService#startCapturing(PictureCapturingListener listener) ``` and pass the listener you've just implemented
+2. Create a new instance of <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/APictureCapturingService.java">```APictureCapturingService``` </a> using <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/PictureCapturingServiceImpl.java">```PictureCapturingServiceImpl#getInstance()```</a> method;
+3. **Start capture** by calling the method ```APictureCapturingService#startCapturing(PictureCapturingListener listener) ``` and pass the listener you've just implemented (**step 1**)
 
 ## How can I support this project?
 - Star this GitHub repo :star:
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
             picturesTaken.forEach((pictureUrl, pictureData) -> {
                //convert the byte array 'pictureData' to a bitmap (no need to read the file from the external storage) but in case you
-               //want to then use 'pictureUrl' which stores the picture taken's location on the device
+               //You can also use 'pictureUrl' which stores the picture's location on the device
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.length);
             });
             showToast("Done capturing all photos!");
