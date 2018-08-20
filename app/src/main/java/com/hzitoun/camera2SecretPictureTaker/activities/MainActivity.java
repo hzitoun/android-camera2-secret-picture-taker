@@ -32,13 +32,16 @@ import java.util.TreeMap;
  */
 public class MainActivity extends AppCompatActivity implements PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-
-    public static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
+    private static final String[] requiredPermissions = {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+    };
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
 
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
     
-     //service          
+     //The capture service          
     private APictureCapturingService pictureService;
 
 
@@ -119,10 +122,6 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
      */
     @TargetApi(Build.VERSION_CODES.M)
     private void checkPermissions() {
-        final String[] requiredPermissions = {
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA,
-        };
         final List<String> neededPermissions = new ArrayList<>();
         for (final String permission : requiredPermissions) {
             if (ContextCompat.checkSelfPermission(getApplicationContext(),
