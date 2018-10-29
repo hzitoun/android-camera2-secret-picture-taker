@@ -5,7 +5,7 @@ import java.util.TreeMap;
 /**
  * Picture capturing listener
  *
- * @author hzitoun (hamed.zitoun@gmail.com)
+ * @author hzitoun (zitoun.hamed@gmail.com)
  */
 public interface PictureCapturingListener {
 
