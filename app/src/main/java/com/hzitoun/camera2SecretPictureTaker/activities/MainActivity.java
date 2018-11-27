@@ -27,7 +27,6 @@ import java.util.TreeMap;
 
 /**
  * App's Main Activity showing a simple usage of the picture taking service.
- *
  * @author hzitoun (zitoun.hamed@gmail.com)
  */
 public class MainActivity extends AppCompatActivity implements PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -44,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
      //The capture service          
     private APictureCapturingService pictureService;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,19 +51,14 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
         uploadBackPhoto = (ImageView) findViewById(R.id.backIV);
         uploadFrontPhoto = (ImageView) findViewById(R.id.frontIV);
         final Button btn = (Button) findViewById(R.id.startCaptureBtn);
-        //getting instance of the Service from PictureCapturingServiceImpl
+        // getting instance of the Service from PictureCapturingServiceImpl
         pictureService = PictureCapturingServiceImpl.getInstance(this);
         btn.setOnClickListener(v -> {
                showToast("Starting capture!");
                pictureService.startCapturing(this);
         });
     }
-
-    /**
-     * Shows a {@link Toast} on the UI thread.
-     *
-     * @param text The message to show
-     */
+    
     private void showToast(final String text) {
         runOnUiThread(() ->
                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
