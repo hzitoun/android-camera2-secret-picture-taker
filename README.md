@@ -1,4 +1,4 @@
-<img width = "100%" height = "280" src="https://user-images.githubusercontent.com/34313493/44617202-8d051180-a880-11e8-8788-b52580aea56e.jpg"> 
+<img align="right" width="200" height="200" src="https://user-images.githubusercontent.com/34313493/44617202-8d051180-a880-11e8-8788-b52580aea56e.jpg">
 
 [![Build Status](https://travis-ci.org/botyourbusiness/android-camera2-secret-picture-taker.svg?branch=master)](https://travis-ci.org/botyourbusiness/android-camera2-secret-picture-taker)
 
