@@ -6,6 +6,10 @@
 Take pictures secretly (without preview or launching device's camera app) from all available cameras using Android CAMERA2 API.
 The <a href="https://developer.android.com/reference/android/hardware/camera2/package-summary.html">Camera2 API</a> replaces the deprecated Camera class.
 
+## How can I support this project?
+- Star this GitHub repo :star:
+- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
+
 ## Usage
 
 1. Implement the interface <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/listeners/PictureCapturingListener.java">```PictureCapturingListener```</a> (your capture listener) and override the following methods:
@@ -13,10 +17,6 @@ The <a href="https://developer.android.com/reference/android/hardware/camera2/pa
     -  **void onCaptureDone(String pictureUrl, byte[] pictureData)** to get a couple (picture Url, picture Data). Use this method if you don't want to wait for ALL pictures to be ready;
 2. Create a new instance of <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/APictureCapturingService.java">```APictureCapturingService``` </a> using <a href="https://github.com/hzitoun/android-camera2-secret-picture-taker/blob/master/app/src/main/java/com/hzitoun/camera2SecretPictureTaker/services/PictureCapturingServiceImpl.java">```PictureCapturingServiceImpl#getInstance()```</a> method;
 3. **Start capture** by calling the method ```APictureCapturingService#startCapturing(PictureCapturingListener listener) ``` and pass the listener you've just implemented (**step 1**)
-
-## How can I support this project?
-- Star this GitHub repo :star:
-- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
 
 ## Sample
 
