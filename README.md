@@ -3,8 +3,10 @@
 [![Build Status](https://travis-ci.org/botyourbusiness/android-camera2-secret-picture-taker.svg?branch=master)](https://travis-ci.org/botyourbusiness/android-camera2-secret-picture-taker)
 
 # 📸 Android Camera2 Secret Picture Taker (AC2SPT) 
+
 Take pictures secretly (without preview or launching device's camera app) from all available cameras using Android CAMERA2 API.
 The <a href="https://developer.android.com/reference/android/hardware/camera2/package-summary.html">Camera2 API</a> replaces the deprecated Camera class.
+___
 
 ## How can I support this project?
 - If you have enjoyed the project and it helped you creating a project, building an app, starting a business. You could encourage and support me on patreon https://www.patreon.com/hzitoun 🤗 !  
