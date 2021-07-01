@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements PictureCapturingL
 }
 ```
 
-Thanks to https://github.com/maaudrana for the logo :)
+Thanks to [maaudrana](https://github.com/maaudrana) for the logo :)
 
 ## Contributors
 
